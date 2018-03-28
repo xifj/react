@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="https://cdn.bootcss.com/react/15.4.2/react.min.js"></script>
+    <script src="https://cdn.bootcss.com/react/15.4.2/react-dom.min.js"></script>
+    <script src="https://cdn.bootcss.com/babel-standalone/6.22.1/babel.min.js"></script>
+</head>
+<style>
+    .content{
+        background: #eafa14;
+    }
+    .list{
+        background: #d4d4d4;
+        float: left;
+        margin-left: 20px;
+        padding: 10px;
+        margin-top: 20px;
+    }
+    .clearfix:after{
+        content:".";
+        display:block;
+        height:0;
+        clear:both;
+        visibility:hidden
+    }
+    .btn{
+        border: 0;
+    }
+    .edit{
+        background: #337AB7;
+        color: #fff;
+    }
+    .delete{
+        background: #b73b3e;
+        color: #fff;
+        margin-left: 10px;
+    }
+    .save{
+        background: #eafa14;
+    }
+    .textarea{
+        width: 80px;
+        height: 20px;
+    }
+    .button-info{
+        width: 100px;
+        height: 40px;
+        line-height: 40px;
+    }
+</style>
+<body>
+    <div id="app"></div>
+    <div id="app2"></div>
+</body>
+<script type="text/babel">
+    var App = React.createClass({
+        getInitialState: function() {
+            return ({
+                comments: ['hello,everybody', 'welcome my house', 'are you go where']
+            })
+        },
+        updateComment: function (newTxt,i) {
+            var arr = this.state.comments;
+            arr[i] = newTxt
+            this.setState({comments: arr})
+        },
+        removeDom: function (i) {
+            var arr = this.state.comments;
+            arr.splice(i,1)
+            this.setState({comments: arr})
+        },
+        eachComment: function(text,index) {
+            return (
+                <Comment deleteList={this.removeDom} updateCommentTxt={this.updateComment} key={index} index={index}>{text}</Comment>
+            )
+        },
+        AddList: function (text) {
+            var arr = this.state.comments;
+                arr.push(text)
+            this.setState({comments: arr})
+        },
+        render: function () {
+            return (
+                <div>
+                    <button className="button-info" onClick={this.AddList.bind(null, 'Default text')}>Add New</button>
+                    <div className="app">
+                        {
+                            this.state.comments.map(
+                                this.eachComment
+                            )
+                        }
+                    </div>
+                </div>
+            )
+        }
+    })
+    var Comment = React.createClass({
+        getInitialState: function () {
+            return {
+                editing: false
+            }
+        },
+        renderNormal: function () {
+            return (
+                <div className="list clearfix">
+                    <div className="text">{this.props.children}</div>
+                    <button onClick={this.edit} className="edit btn">edit</button>
+                    <button onClick={this.delete} className="delete btn">delete</button>
+                </div>
+            );
+        },
+        renderFrom: function () {
+            return (
+                <div className="list clearfix">
+                    <textarea className="textarea" ref="newTxt" defaultValue={this.props.children} name="" id="" cols="30" rows="10"></textarea>
+                    <div>
+                        <button onClick={this.save} className="save btn">save</button>
+                    </div>
+                </div>
+            );
+        },
+        save: function () {
+            var val = this.refs.newTxt.value
+            this.props.updateCommentTxt(val,this.props.index)
+            this.setState({editing: false})
+        },
+        edit: function() {
+           this.setState({editing: true})
+        },
+        delete: function () {
+            this.props.deleteList(this.props.index)
+        },
+        render: function () {
+            if (this.state.editing) {
+                return this.renderFrom();
+            } else {
+                return this.renderNormal();
+            }
+        }
+    });
+    /*将元素插入dom react最基本的方法，将模板转为html，并且插入dom中*/
+    ReactDOM.render(
+        <App></App>,
+        document.getElementById('app')
+    )
+
+</script>
+</html>
